@@ -1,4 +1,3 @@
-#自动调用api保活，加密版
 name: Auto Api Task
 
 on: 
@@ -13,45 +12,46 @@ on:
     types: [started]
    
 jobs:
-   Task:
+  Task:
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id  # 自己点的 start
     steps:
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: 3.10.17
-    - name: Install requests #安装requests
-      run: |
-        pip install requests
-    - name: Read config from secrets  #读取机密
+
+    - name: Install requests # 安装 requests
+      run: pip install requests
+
+    - name: Copy script and set env variables
       env: 
-        CONFIG_ID: ${{ secrets.CONFIG_ID }} # secrets_id 提供
-        CONFIG_KEY: ${{ secrets.CONFIG_KEY }} # secrets_key 提供
-      run: | 
-        cp 1.py 2.py
-        echo $CONFIG_ID > configid.txt
-        echo $CONFIG_KEY > configkey.txt
-        sed -i '10 r configid.txt' 2.py
-        sed -i '12 r configkey.txt' 2.py
-    - name: Test Api #Api调用
-      run: | 
-        echo `date +"%Y-%m-%d %H:%M:%S"` begin > time.log
-        python 2.py
-    - name: Delete secrets config #删除机密
-      run: | 
-        rm -f 2.py
-        rm -f configid.txt
-        rm -f configkey.txt    
-    - name: Commit #上传新的refresh_token到仓库
+        CONFIG_ID: ${{ secrets.CONFIG_ID }}  # 你的client_id
+        CONFIG_KEY: ${{ secrets.CONFIG_KEY }} # 你的client_secret
+      run: cp 1.py 2.py
+
+    - name: Test Api # 调用API
+      env:
+        CONFIG_ID: ${{ secrets.CONFIG_ID }}
+        CONFIG_KEY: ${{ secrets.CONFIG_KEY }}
       run: |
-        git config --global user.email hbzjt2012@foxmail.com
-        git config --global user.name hbzjt2012
+        echo "$(date +"%Y-%m-%d %H:%M:%S") begin" > time.log
+        python 2.py
+
+    - name: Delete temporary script
+      run: rm -f 2.py
+
+    - name: Commit # 上传新的 refresh_token 到仓库
+      run: |
+        git config --global user.email "hbzjt2012@foxmail.com"
+        git config --global user.name "hbzjt2012"
         git add .
-        git commit -m "update new refresh_token" -a
+        git diff --quiet && echo "No changes to commit" || git commit -m "update new refresh_token" -a
+
     - name: Push changes
-      uses: ad-m/github-push-action@master
+      uses: ad-m/github-push-action@v0.6.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
