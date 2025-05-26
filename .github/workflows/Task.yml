@@ -40,18 +40,24 @@ jobs:
       run: |
         echo "$(date +"%Y-%m-%d %H:%M:%S") begin" > time.log
         python 2.py
-
-    - name: Delete temporary script
-      run: rm -f 2.py
-
+    
+    - name: Show current directory and files
+      run: |
+        pwd
+        ls -al
+    
+    - name: Show git status
+      run: git status
+    
     - name: Commit # 上传新的 refresh_token 到仓库
       run: |
         git config --global user.email "hbzjt2012@foxmail.com"
         git config --global user.name "hbzjt2012"
         git add .
         git diff --quiet && echo "No changes to commit" || git commit -m "update new refresh_token" -a
-
+    
     - name: Push changes
       uses: ad-m/github-push-action@v0.6.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
