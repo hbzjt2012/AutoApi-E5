@@ -54,7 +54,9 @@ jobs:
         git config --global user.email "hbzjt2012@foxmail.com"
         git config --global user.name "hbzjt2012"
         git add .
-        git diff --quiet && echo "No changes to commit" || git commit -m "update new refresh_token" -a
+        git status  # 查看暂存区状态，确认添加成功
+        git diff --cached --quiet && echo "No changes to commit" || git commit -m "update new refresh_token"
+
     
     - name: Push changes
       uses: ad-m/github-push-action@v0.6.0
