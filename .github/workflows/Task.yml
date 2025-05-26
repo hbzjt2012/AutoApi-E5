@@ -19,10 +19,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
-    - name: Set up Python #安装python
-      uses: actions/setup-python@v1
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.8
+        python-version: 3.10.17
     - name: Install requests #安装requests
       run: |
         pip install requests
@@ -47,8 +47,8 @@ jobs:
         rm -f configkey.txt    
     - name: Commit #上传新的refresh_token到仓库
       run: |
-        git config --global user.email admin@nange.cn
-        git config --global user.name 翠花
+        git config --global user.email hbzjt2012@foxmail.com
+        git config --global user.name hbzjt2012
         git add .
         git commit -m "update new refresh_token" -a
     - name: Push changes
